@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detección en Tiempo Real con ONNX</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding-top: 20px; }
+        #container { position: relative; display: inline-block; }
+        #video { transform: scaleX(-1); }
+        #canvas { position: absolute; top: 0; left: 0; transform: scaleX(-1); }
+        #model-selector { margin: 20px; padding: 10px; font-size: 1em; }
+    </style>
+</head>
+<body>
+    <h1>Detección de Objetos con ONNX.js</h1>
+    <label for="model-selector">Elige un modelo:</label>
+    <select id="model-selector">
+        <option value="modelo_frutas">Detector de Frutas</option>
+        <option value="modelo_vehiculos">Detector de Vehículos</option>
+    </select>
+    <div id="container">
+        <video id="video" autoplay playsinline width="640" height="480"></video>
+        <canvas id="canvas" width="640" height="480"></canvas>
+    </div>
+    <p id="status">Selecciona un modelo para comenzar...</p>
+
+    <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
