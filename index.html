@@ -4,13 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detección en Tiempo Real con ONNX</title>
-    <style>
-        body { font-family: sans-serif; text-align: center; padding-top: 20px; }
-        #container { position: relative; display: inline-block; }
-        #video { transform: scaleX(-1); }
-        #canvas { position: absolute; top: 0; left: 0; transform: scaleX(-1); }
-        #model-selector { margin: 20px; padding: 10px; font-size: 1em; }
-    </style>
+   <style>
+    body { font-family: sans-serif; text-align: center; padding-top: 20px; }
+    #container { position: relative; display: inline-block; }
+    
+    /* --- SECCIÓN CORREGIDA --- */
+    #video { 
+        /* La línea de transform fue borrada */
+    }
+    #canvas { 
+        position: absolute; 
+        top: 0; 
+        left: 0; 
+        /* La línea de transform fue borrada */
+    }
+    /* --- FIN DE LA CORRECCIÓN --- */
+
+    #model-selector { margin: 20px; padding: 10px; font-size: 1em; }
+</style>
 </head>
 <body>
     <h1>Detección de Objetos con ONNX.js</h1>

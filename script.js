@@ -14,10 +14,14 @@ document.addEventListener('DOMContentLoaded', () => {
             cancelAnimationFrame(detectionLoopId);
             detectionLoopId = null;
         }
-        const modelName = modelSelector.value;
-        const modelPath = `./modelos/${modelName}/best.onnx`;
-        const labelsPath = `./modelos/${modelName}/labels.json`;
-        status.textContent = `Cargando modelo: ${modelName}...`;
+        const selectedOption = modelSelector.options[modelSelector.selectedIndex];
+        const modelFolder = selectedOption.value;
+        const modelFile = selectedOption.dataset.filename;
+
+        const modelPath = `./modelos/${modelFolder}/${modelFile}`;
+        const labelsPath = `./modelos/${modelFolder}/labels.json`;
+
+        status.textContent = `Cargando modelo: ${modelFolder}...`;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         try {
             session = await ort.InferenceSession.create(modelPath);
@@ -56,26 +60,38 @@ document.addEventListener('DOMContentLoaded', () => {
         detectFrame();
     }
 
+    // --- FUNCIÓN CORREGIDA ---
     async function preprocess(videoElement) {
+        const modelWidth = 1280; // <-- CORREGIDO: Tamaño esperado por el modelo
+        const modelHeight = 1280; // <-- CORREGIDO: Tamaño esperado por el modelo
+
         const tempCanvas = document.createElement('canvas');
-        tempCanvas.width = 640; tempCanvas.height = 640;
+        tempCanvas.width = modelWidth;
+        tempCanvas.height = modelHeight;
         const tempCtx = tempCanvas.getContext('2d');
-        tempCtx.drawImage(videoElement, 0, 0, 640, 640);
-        const imageData = tempCtx.getImageData(0, 0, 640, 640);
+        tempCtx.drawImage(videoElement, 0, 0, modelWidth, modelHeight);
+        
+        const imageData = tempCtx.getImageData(0, 0, modelWidth, modelHeight);
         const { data } = imageData;
-        const float32Data = new Float32Array(3 * 640 * 640);
-        for (let i = 0; i < 640 * 640; ++i) {
+        const float32Data = new Float32Array(3 * modelWidth * modelHeight);
+
+        for (let i = 0; i < modelWidth * modelHeight; ++i) {
             const r = data[i * 4] / 255.0;
             const g = data[i * 4 + 1] / 255.0;
             const b = data[i * 4 + 2] / 255.0;
             float32Data[i] = r;
-            float32Data[i + 640 * 640] = g;
-            float32Data[i + 2 * 640 * 640] = b;
+            float32Data[i + modelWidth * modelHeight] = g;
+            float32Data[i + 2 * modelWidth * modelHeight] = b;
         }
-        return new ort.Tensor('float32', float32Data, [1, 3, 640, 640]);
+
+        return new ort.Tensor('float32', float32Data, [1, 3, modelHeight, modelWidth]);
     }
 
+    // --- FUNCIÓN CORREGIDA ---
     function processAndDraw(results, ctx, videoWidth, videoHeight) {
+        const modelWidth = 1280; // <-- CORREGIDO: Tamaño usado para la predicción
+        const modelHeight = 1280; // <-- CORREGIDO: Tamaño usado para la predicción
+
         const output = results.output0.data;
         const confidenceThreshold = 0.5;
         ctx.clearRect(0, 0, videoWidth, videoHeight);
@@ -92,10 +108,13 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             if (max_prob > confidenceThreshold) {
                 const label = labels[class_id] || `Clase ${class_id}`;
-                const x = (x_center - width / 2) / 640 * videoWidth;
-                const y = (y_center - height / 2) / 640 * videoHeight;
-                const w = width / 640 * videoWidth;
-                const h = height / 640 * videoHeight;
+                
+                // CORREGIDO: La escala de las cajas ahora usa el tamaño del modelo
+                const x = (x_center - width / 2) / modelWidth * videoWidth;
+                const y = (y_center - height / 2) / modelHeight * videoHeight;
+                const w = width / modelWidth * videoWidth;
+                const h = height / modelHeight * videoHeight;
+
                 ctx.strokeStyle = '#00FF00';
                 ctx.lineWidth = 3;
                 ctx.strokeRect(x, y, w, h);
@@ -105,5 +124,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     }
+
     initCamera();
 });
