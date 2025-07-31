@@ -7,33 +7,30 @@
     <style>
         body { font-family: sans-serif; text-align: center; padding-top: 20px; }
         #container { position: relative; display: inline-block; }
-        
-        /* --- MODO ESPEJO QUITADO --- */
-        #video { 
-            /* La línea de transform fue borrada */
-        }
-        #canvas { 
-            position: absolute; 
-            top: 0; 
-            left: 0; 
-            /* La línea de transform fue borrada */
-        }
-        
-        #model-selector { margin: 20px; padding: 10px; font-size: 1em; }
+        #video { /* Modo espejo quitado */ }
+        #canvas { position: absolute; top: 0; left: 0; }
+        #controls { margin: 20px; padding: 10px; max-width: 640px; display: inline-block; text-align: left;}
+        #focus-control { display: none; } /* Oculto por defecto */
+        #focus-control label { margin-right: 10px; }
+        #focus-control input { width: 300px; }
+        #model-selector { margin-bottom: 15px; padding: 10px; font-size: 1em; }
     </style>
 </head>
 <body>
     <h1>Detección de Objetos con ONNX.js</h1>
 
-    <label for="model-selector">Elige un modelo:</label>
-    <select id="model-selector">
-        <!-- --- LÍNEA CORREGIDA --- -->
-        <!-- Ahora se especifica el nombre de la carpeta (value) y el nombre del archivo (data-filename) -->
-        <option value="Tapon_6800" data-filename="tapon6800.onnx">INSPECCION IA TAPON 6800</option>
-        
-        <!-- Puedes añadir más modelos aquí en el futuro -->
-        <!-- <option value="modelo_frutas" data-filename="best.onnx">Detector de Frutas</option> -->
-    </select>
+    <div id="controls">
+        <div>
+            <label for="model-selector">Elige un modelo:</label>
+            <select id="model-selector">
+                <option value="Tapon_6800" data-filename="tapon6800.onnx">INSPECCION IA TAPON 6800</option>
+            </select>
+        </div>
+        <div id="focus-control">
+            <label for="focus-slider">Enfoque:</label>
+            <input type="range" id="focus-slider">
+        </div>
+    </div>
 
     <div id="container">
         <video id="video" autoplay playsinline width="640" height="480"></video>
